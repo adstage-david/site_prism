@@ -14,12 +14,20 @@ module SitePrism
       !(page.current_url =~ url_matcher).nil?
     end
 
-    def self.set_url page_url
-      @url = page_url
+    def self.set_url page_url = nil
+      if block_given?
+        @url = Proc.new
+      else
+        @url = page_url
+      end
     end
 
-    def self.set_url_matcher page_url_matcher
-      @url_matcher = page_url_matcher
+    def self.set_url_matcher page_url_matcher = nil
+      if block_given?
+        @url_matcher = Proc.new
+      else
+        @url_matcher = page_url_matcher
+      end
     end
 
     def self.url
@@ -31,11 +39,19 @@ module SitePrism
     end
 
     def url
-      self.class.url
+      if self.class.url.respond_to?(:call)
+        instance_eval(&self.class.url)
+      else
+        self.class.url
+      end
     end
 
     def url_matcher
-      self.class.url_matcher
+      if self.class.url_matcher.respond_to?(:call)
+        instance_eval(&self.class.url_matcher)
+      else
+        self.class.url_matcher
+      end
     end
 
     def secure?

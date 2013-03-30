@@ -17,6 +17,21 @@ describe SitePrism::Page do
     page.url.should == "bob"
   end
 
+  it "should be able to set a dynamic url against it" do
+    class PageToSetDynamicUrlAgainst < SitePrism::Page
+      attr_reader :dynamic
+      set_url { "bob/#{self.dynamic}" }
+
+      def initialize(arg)
+        @dynamic = arg
+      end
+    end
+    page1 = PageToSetDynamicUrlAgainst.new(1)
+    page2 = PageToSetDynamicUrlAgainst.new(2)
+    page1.url.should == "bob/1"
+    page2.url.should == "bob/2"
+  end
+
   it "url should be nil by default" do
     class PageDefaultUrl < SitePrism::Page; end
     page = PageDefaultUrl.new
@@ -57,16 +72,34 @@ describe SitePrism::Page do
     page.url_matcher.should == /bob/
   end
 
+  it "should be able to set a dynamic url matcher against it" do
+    class PageToSetDynamicUrlMatcherAgainst < SitePrism::Page
+      attr_reader :dynamic
+      set_url_matcher { %r{bob/#{self.dynamic}} }
+      def initialize(arg)
+        @dynamic = arg
+      end
+    end
+    page1 = PageToSetDynamicUrlMatcherAgainst.new(1)
+    page2 = PageToSetDynamicUrlMatcherAgainst.new(2)
+    page1.url_matcher.should == %r{bob/1}
+    page2.url_matcher.should == %r{bob/2}
+  end
+
   it "should raise an exception if displayed? is called before the matcher has been set" do
     class PageWithNoMatcher < SitePrism::Page; end
     expect { PageWithNoMatcher.new.displayed? }.to raise_error SitePrism::NoUrlMatcherForPage
   end
 
   it "should allow calls to displayed? if the url matcher has been set" do
-    class PageWithUrlMatcher < SitePrism::Page
-      set_url_matcher /bob/
+    class PageWithDynamicUrlMatcher < SitePrism::Page
+      attr_reader :dynamic
+      set_url_matcher { %r{bob/#{self.dynamic}} }
+      def initialize(arg)
+        @dynamic = arg
+      end
     end
-    page = PageWithUrlMatcher.new
+    page = PageWithDynamicUrlMatcher.new(1)
     expect { page.displayed? }.to_not raise_error SitePrism::NoUrlMatcherForPage
   end
 
