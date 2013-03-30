@@ -21,6 +21,7 @@ require 'sections/search_result'
 require 'pages/my_iframe'
 require 'pages/home'
 require 'pages/no_title'
+require 'pages/dynamic_page'
 require 'pages/page_with_people'
 require 'pages/section_experiments'
 

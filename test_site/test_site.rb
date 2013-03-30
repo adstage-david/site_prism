@@ -14,5 +14,8 @@ class TestSite
   def section_experiments
     TestSectionExperiments.new
   end
+  def dynamic_page(letter)
+    TestDynamicPage.new(letter)
+  end
 end
 
