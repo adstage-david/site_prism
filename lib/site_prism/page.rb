@@ -11,7 +11,7 @@ module SitePrism
 
     def displayed?
       raise SitePrism::NoUrlMatcherForPage if url_matcher.nil?
-      !(page.current_url =~ url_matcher).nil?
+      !(page.current_url.match(url_matcher)).nil?
     end
 
     def self.set_url page_url = nil

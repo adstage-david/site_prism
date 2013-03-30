@@ -74,8 +74,7 @@ describe SitePrism::Page do
 
   it "should be able to set a dynamic url matcher against it" do
     class PageToSetDynamicUrlMatcherAgainst < SitePrism::Page
-      attr_reader :dynamic
-      set_url_matcher { %r{bob/#{self.dynamic}} }
+      set_url_matcher { %r{bob/#{@dynamic}} }
       def initialize(arg)
         @dynamic = arg
       end
@@ -100,7 +99,20 @@ describe SitePrism::Page do
       end
     end
     page = PageWithDynamicUrlMatcher.new(1)
+    page2 = PageWithDynamicUrlMatcher.new(2)
+    page.page.stub(:current_url => 'bob/1')
     expect { page.displayed? }.to_not raise_error SitePrism::NoUrlMatcherForPage
+    expect(page).to be_displayed
+    expect(page2).to_not be_displayed
+  end
+
+  it "should allow calls to displayed? if the url matcher is a string" do
+    class PageWithStringUrlMatcher < SitePrism::Page
+      set_url_matcher { "string_test" }
+    end
+    page = PageWithStringUrlMatcher.new
+    page.page.stub(:current_url => 'my_string_tests')
+    expect(page).to be_displayed
   end
 
   it "should expose the page title" do
